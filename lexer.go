@@ -130,7 +130,7 @@ func (l *Lexer) NextToken() bool {
 		} else if unicode.IsDigit(c) {
 			return l.Number()
 		}
-		l.Tokens = append(l.Tokens, l.MakeToken(ERROR))
+		//l.Tokens = append(l.Tokens, l.MakeToken(ERROR))
 	}
 	l.Pos++
 	return true

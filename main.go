@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"path"
@@ -21,6 +20,9 @@ func main() {
 	source := GetFileSource(filepath)
 	lexer := NewLexer(filepath, source)
 	tokens := lexer.Tokenizer()
-
-	fmt.Printf("%v", tokens)
+	parser := NewParser(tokens)
+	parsedProgram := parser.Parse()
+	// debug printing the ast
+	PrintJson(parsedProgram)
+	//fmt.Printf("%v", tokens)
 }
