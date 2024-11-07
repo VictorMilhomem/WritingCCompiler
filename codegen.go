@@ -1,34 +1,39 @@
 package main
 
-import (
-	"fmt"
-)
-
-func generateAssembly(ast AST) string {
-	function := ast.Program.Function
-
-	assembly := fmt.Sprintf("	.globl	%s\n%s:\n", function.Name, function.Name)
-
-	assembly += generateStatementAssembly(function.Body) + "\n"
-
-	assembly += `	.ident	"GCC: (x86_64-posix-seh-rev0, Built by MinGW-W64 project) 8.1.0"` + "\n"
-	return assembly
+type CodeGenerator struct {
 }
 
-func generateStatementAssembly(stmt Statement) string {
-	switch s := stmt.(type) {
-	case Return:
-		return generateExpressionAssembly(s.Expression) + "\n	ret"
-	default:
-		return ""
+func (c *CodeGenerator) Generate(ast AST) string {
+	prog := c.convertProgram(ast.Program)
+	return prog.String()
+}
+
+func (c *CodeGenerator) convertProgram(prog Program) Prog {
+	fn := c.convertFunction(prog.Function)
+	return Prog{fn}
+}
+
+func (c *CodeGenerator) convertFunction(f Function) Func {
+	name := f.Name
+	stmt := f.Body.(Return)
+	mov, ret := c.convertStatement(stmt)
+	var instructions []Instruction = []Instruction{mov, ret}
+	return Func{
+		name,
+		instructions,
 	}
 }
 
-func generateExpressionAssembly(expr Expression) string {
-	switch e := expr.(type) {
-	case NumberInteger:
-		return fmt.Sprintf("	movl	$%d, %%eax", e.Value)
-	default:
-		return ""
-	}
+func (c *CodeGenerator) convertStatement(stmt Return) (Mov, Ret) {
+	expr, _ := stmt.Expression.(NumberInteger)
+	val := c.convertExpr(expr)
+
+	return Mov{
+		val,
+		Register{},
+	}, Ret{}
+}
+
+func (c *CodeGenerator) convertExpr(val NumberInteger) Imm {
+	return Imm{Value: val.Value}
 }

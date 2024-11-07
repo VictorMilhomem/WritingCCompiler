@@ -36,10 +36,11 @@ func main() {
 	lexer := NewLexer(filepath, source)
 	tokens := lexer.Tokenizer()
 	parser := NewParser(tokens)
-	parsedProgram := parser.Parse()
-	assembly := generateAssembly(parsedProgram)
+	ast := parser.Parse()
+	codeGen := CodeGenerator{}
+	assembly := codeGen.Generate(ast)
 	writeAssemblyToFile(assembly, "C:\\Users\\victo\\GolandProjects\\RioLang\\tests\\simple_gen.s")
 	// debug printing the ast
-	PrintJson(parsedProgram)
+	PrintJson(ast)
 	fmt.Printf(assembly)
 }
