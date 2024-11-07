@@ -32,6 +32,8 @@ func (p *Parser) ParseFunction() Function {
 	name := p.GetPreviousToken().Text
 	p.Expect(LPAREN)
 	//parse the function arguments
+	p.Expect(VOID)
+
 	p.Expect(RPAREN)
 
 	p.Expect(LBRACE)

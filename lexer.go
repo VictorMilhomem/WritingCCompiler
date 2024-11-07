@@ -18,6 +18,11 @@ const (
 	RBRACE
 	LBRACE
 	SEMICOLON
+	MINUS
+	PLUS
+	DECREMENT
+	INCREMENT
+	BITWISE
 
 	// keywords
 	INT
@@ -124,6 +129,27 @@ func (l *Lexer) NextToken() bool {
 		l.Tokens = append(l.Tokens, Token{Kind: RBRACE, Text: string(c)})
 	case ';':
 		l.Tokens = append(l.Tokens, Token{Kind: SEMICOLON, Text: string(c)})
+	case '~':
+		l.Tokens = append(l.Tokens, Token{Kind: BITWISE, Text: string(c)})
+	case '-':
+		lookahead := l.LookAhead(1)
+		switch lookahead {
+		case '-':
+			l.Tokens = append(l.Tokens, Token{Kind: DECREMENT, Text: string(c)})
+			l.Advance(2)
+		default:
+			l.Tokens = append(l.Tokens, Token{Kind: MINUS, Text: string(c)})
+		}
+	case '+':
+		lookahead := l.LookAhead(1)
+		switch lookahead {
+		case '+':
+			l.Tokens = append(l.Tokens, Token{Kind: INCREMENT, Text: string(c)})
+			l.Advance(2)
+		default:
+			l.Tokens = append(l.Tokens, Token{Kind: PLUS, Text: string(c)})
+		}
+
 	default:
 		if unicode.IsLetter(c) {
 			return l.Identifier()
